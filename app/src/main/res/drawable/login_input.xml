@@ -8,8 +8,12 @@
         <!--android:startColor="#646464"-->
         <!--android:type="linear"-->
         <!--/>-->
-    <corners android:radius="16px" />
-    <stroke
-        android:width="2dp"
-        android:color="@color/colorPrimary"/>
+    <!--<corners android:radius="16px" />-->
+    <solid
+        android:color="#32ffffff"
+        />
+    <!--<corners android:radius="25dp" />-->
+    <!--<stroke-->
+        <!--android:width="2dp"-->
+        <!--android:color="@color/colorPrimary"/>-->
 </shape>
