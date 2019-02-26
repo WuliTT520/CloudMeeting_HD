@@ -31,6 +31,7 @@ import com.arcsoft.face.VersionInfo;
 import com.zhihui.imeeting.cloudmeeting_hd.R;
 import com.zhihui.imeeting.cloudmeeting_hd.common.Constants;
 import com.zhihui.imeeting.cloudmeeting_hd.controller.MyURL;
+import com.zhihui.imeeting.cloudmeeting_hd.helper.TCP;
 import com.zhihui.imeeting.cloudmeeting_hd.util.camera.CameraHelper;
 import com.zhihui.imeeting.cloudmeeting_hd.util.camera.CameraListener;
 
@@ -65,7 +66,7 @@ public class FaceIDActivity extends Activity {
     private Integer cameraID = Camera.CameraInfo.CAMERA_FACING_FRONT;
     private TextureView previewView ;//相机预览显示控件
 
-    private int meetingId=50;
+    private int meetingId;
     private Handler handler;
     private Message msg;
     AlertDialog.Builder builder;
@@ -81,6 +82,9 @@ public class FaceIDActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_face_id);
+
+        meetingId=getIntent().getIntExtra("meetingId",-1);
+        Toast.makeText(FaceIDActivity.this,"会议id为"+meetingId,Toast.LENGTH_LONG).show();
 
         previewView=findViewById(R.id.face);
 
@@ -103,6 +107,14 @@ public class FaceIDActivity extends Activity {
 
                         tip.setText(msg.getData().getString("message"));
                         dialog.show();
+                        TCP tcp=new TCP();
+                        try {
+                            tcp.post();
+                            Toast.makeText(FaceIDActivity.this,"运行到这",Toast.LENGTH_LONG).show();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {

@@ -34,12 +34,14 @@ public class ChooseRoomActivity extends Activity {
     private static final String TAG="ChooseRoomActivity";
     private RecyclerView room_list;
     private SharedPreferences sp;
+    private SharedPreferences.Editor editor;
     private Handler handler;
     private Message msg;
 
     private ArrayList<Integer> room_id;
     private ArrayList<String> room_name;
     private ArrayList<String> room_address;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +75,16 @@ public class ChooseRoomActivity extends Activity {
                         adapter.setOnItemClickLitener(new RoomListAdapter.OnItemClickLitener() {
                             @Override
                             public void onItemClick(View view, int position) {
-                                Toast.makeText(ChooseRoomActivity.this,room_id.get(position)+"",Toast.LENGTH_LONG).show();
+//                                Toast.makeText(ChooseRoomActivity.this,room_id.get(position)+"",Toast.LENGTH_LONG).show();
+                                editor = sp.edit();
+                                editor.putInt("roomID",room_id.get(position));
+                                editor.putString("roomName",room_name.get(position));
+                                editor.commit();
+
+                                Intent intent=new Intent(ChooseRoomActivity.this,MainActivity.class);
+
+                                startActivity(intent);
+                                finish();
                             }
                         });
                         room_list.setAdapter(adapter);

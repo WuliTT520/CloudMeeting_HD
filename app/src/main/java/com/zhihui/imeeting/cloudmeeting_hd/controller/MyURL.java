@@ -11,4 +11,7 @@ public class MyURL {
     public String selectAll(){
         return URL+"/meetRoom/selectAll";
     }
+    public String oneRoomReserver(){
+        return URL+"/meeting/oneRoomReserver";
+    }
 }

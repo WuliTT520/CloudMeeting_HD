@@ -99,6 +99,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(LoginActivity.this,FaceIDActivity.class);
+                intent.putExtra("meetingId",60);
                 startActivity(intent);
             }
         });

@@ -58,22 +58,29 @@ public class RoomListAdapter extends RecyclerView.Adapter<RoomListAdapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder,final int i) {
-        myViewHolder.order_tv.setText((i+1)+"");
-        myViewHolder.name_tv.setText(room_name.get(i));
-        myViewHolder.address_tv.setText(room_address.get(i));
-        if (mOnItemClickLitener != null) {
-            myViewHolder.root.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mOnItemClickLitener.onItemClick(view, i);
-                }
-            });
+        if(i==0){
+            myViewHolder.order_tv.setText("序号");
+            myViewHolder.name_tv.setText("名称");
+            myViewHolder.address_tv.setText("地址");
+        }else {
+            myViewHolder.order_tv.setText((i)+"");
+            myViewHolder.name_tv.setText(room_name.get(i-1));
+            myViewHolder.address_tv.setText(room_address.get(i-1));
+            if (mOnItemClickLitener != null) {
+                myViewHolder.root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mOnItemClickLitener.onItemClick(view, i-1);
+                    }
+                });
+            }
         }
+
     }
 
     @Override
     public int getItemCount() {
-        return room_id.size();
+        return room_id.size()+1;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

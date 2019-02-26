@@ -21,10 +21,11 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/room_list"
-        android:layout_width="400dp"
+        android:layout_width="750dp"
         android:layout_height="match_parent"
         android:layout_marginTop="100dp"
         android:layout_marginBottom="60dp"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
