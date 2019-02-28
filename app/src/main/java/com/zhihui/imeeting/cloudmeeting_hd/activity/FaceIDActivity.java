@@ -119,7 +119,8 @@ public class FaceIDActivity extends Activity {
                             @Override
                             public void run() {
                                 dialog.dismiss();
-                                cameraHelper.start();
+//                                cameraHelper.start();
+                                finish();
                             }
                         },2000);
 

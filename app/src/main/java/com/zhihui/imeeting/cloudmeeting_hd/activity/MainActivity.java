@@ -7,12 +7,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.zhouwei.library.CustomPopWindow;
 import com.zhihui.imeeting.cloudmeeting_hd.R;
 import com.zhihui.imeeting.cloudmeeting_hd.controller.MyURL;
 
@@ -64,12 +70,21 @@ public class MainActivity extends Activity {
     TextView meeting_time_tv;
     TextView button;
     LinearLayout bg;
+    ImageView set;
+    ImageView more;
+    ImageView qrcode;
+
+
+    CustomPopWindow mCustomPopWindow;
+    String sessionId;
+    SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+        setListener();
     }
     public void init(){
         sp=this.getSharedPreferences("userInfo", Context.MODE_PRIVATE);
@@ -82,6 +97,9 @@ public class MainActivity extends Activity {
         meeting_time_tv=findViewById(R.id.meeting_time);
         button=findViewById(R.id.button);
         bg=findViewById(R.id.bg);
+        set=findViewById(R.id.set);
+        more=findViewById(R.id.more);
+        qrcode=findViewById(R.id.rqcode);
 
         roomId=sp.getInt("roomID",-1);
         roomName=sp.getString("roomName","会议室");
@@ -140,13 +158,22 @@ public class MainActivity extends Activity {
                         }
                         break;
                     case 201:
-                        isworking.setText("今天没有会议预订");
+                        isworking.setText("当前没有会议信息");
                         isworking.setTextColor(MainActivity.this.getResources().getColor(R.color.free));
                         meeting_name_tv.setText("");
                         meeting_time_tv.setText("");
                         button.setText("");
                         button.setBackgroundColor(MainActivity.this.getResources().getColor(R.color.touming));
                         bg.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.free_bg));
+                        break;
+                    case 202:
+                        editor = sp.edit();
+                        editor.putString("sessionID",sessionId);
+                        editor.commit();
+                        Intent intent=new Intent(MainActivity.this,ChooseRoomActivity.class);
+                        startActivity(intent);
+                        finish();
+
                         break;
                 }
             }
@@ -216,13 +243,28 @@ public class MainActivity extends Activity {
                     if (flag){
                         JSONArray info=data.getJSONArray("data");
                         if (info.length()>0){
-                            meetingId=info.getJSONObject(0).getInt("id");
-                            topic=info.getJSONObject(0).getString("topic");
-                            begin=info.getJSONObject(0).getString("begin");
-                            over=info.getJSONObject(0).getString("over");
-                            status=info.getJSONObject(0).getString("status");
+                            for(int i=0;i<info.length();i++){
+                                if (info.getJSONObject(i).getString("status").equals("已结束")){
+                                    continue;
+                                }else {
+                                    meetingId=info.getJSONObject(i).getInt("id");
+                                    topic=info.getJSONObject(i).getString("topic");
+                                    begin=info.getJSONObject(i).getString("begin");
+                                    over=info.getJSONObject(i).getString("over");
+                                    status=info.getJSONObject(i).getString("status");
+                                    msg=Message.obtain();
+                                    msg.what=200;
+                                    handler.sendMessage(msg);
+                                    return;
+                                }
+                            }
+//                            meetingId=info.getJSONObject(0).getInt("id");
+//                            topic=info.getJSONObject(0).getString("topic");
+//                            begin=info.getJSONObject(0).getString("begin");
+//                            over=info.getJSONObject(0).getString("over");
+//                            status=info.getJSONObject(0).getString("status");
                             msg=Message.obtain();
-                            msg.what=200;
+                            msg.what=201;
                             handler.sendMessage(msg);
                         }else {
                             //今天以后都没有会议
@@ -251,6 +293,127 @@ public class MainActivity extends Activity {
                     intent.putExtra("meetingId",meetingId);
                     startActivity(intent);
                 }
+            }
+        });
+
+        set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Toast.makeText(MainActivity.this,"设置",Toast.LENGTH_LONG).show();
+                View contentView = LayoutInflater.from(MainActivity.this).inflate(R.layout.popwindow,null);
+                //处理popWindow 显示内容
+                handleLogic(contentView);
+                //创建并显示popWindow
+                mCustomPopWindow= new CustomPopWindow.PopupWindowBuilder(MainActivity.this)
+                        .setView(contentView)
+                        .create()
+                        .showAsDropDown(set,-60,-40);
+
+            }
+        });
+        more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this,"详细信息",Toast.LENGTH_LONG).show();
+                Intent intent=new Intent(MainActivity.this,InfoActivity.class);
+                startActivity(intent);
+            }
+        });
+        qrcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Toast.makeText(MainActivity.this,"显示二维码",Toast.LENGTH_LONG).show();
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Light_Dialog_Alert);
+                View dialogview = LayoutInflater.from(MainActivity.this).inflate(R.layout.show_qrcode, null);
+                builder.setView(dialogview);
+                AlertDialog dialog=builder.create();
+                dialog.show();
+                final WindowManager.LayoutParams params = dialog.getWindow().getAttributes();
+                params.width = 620;
+                params.height = 620;
+                dialog.getWindow().setAttributes(params);
+
+//                dialog.show();
+            }
+        });
+    }
+
+    private void handleLogic(View contentView) {
+
+        //设置弹出View中的点击事件
+        contentView.findViewById(R.id.reset).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Toast.makeText(MainActivity.this,"重设会议室",Toast.LENGTH_LONG).show();
+                mCustomPopWindow.dissmiss();
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this,R.style.Theme_AppCompat_Light_Dialog_Alert);
+                View dialogview = LayoutInflater.from(MainActivity.this).inflate(R.layout.input_dialog, null);
+
+
+                builder.setView(dialogview);
+                final AlertDialog dialog=builder.create();
+                final EditText username=dialogview.findViewById(R.id.username);
+                final EditText password=dialogview.findViewById(R.id.password);
+
+                dialogview.findViewById(R.id.yes).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final OkHttpClient client = new OkHttpClient();
+                        String user=username.getText().toString();
+                        String pwd=password.getText().toString();
+                        if (pwd.length()==0||user.length()==0){
+                            Toast.makeText(MainActivity.this,"请输入信息",Toast.LENGTH_LONG).show();
+                            return;
+                        }
+                        RequestBody form=new FormBody.Builder()
+                                .add("username",user)
+                                .add("password",pwd)
+                                .build();
+                        final Request request=new Request.Builder()
+                                .url(new MyURL().mangerLogin())
+                                .post(form)
+                                .build();
+                        Call call = client.newCall(request);
+                        call.enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                msg=Message.obtain();
+                                msg.what=404;
+                                handler.sendMessage(msg);
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                try {
+                                    String result = response.body().string();
+//                                    Log.w(TAG,result);
+                                    JSONObject data = new JSONObject(result);
+                                    boolean flag = data.getBoolean("status");
+                                    if (flag){
+                                        sessionId=response.header("Set-Cookie");
+                                        dialog.dismiss();
+                                        msg=Message.obtain();
+                                        msg.what=202;
+                                        handler.sendMessage(msg);
+                                    }else {
+                                        msg=Message.obtain();
+                                        msg.what=500;
+                                        handler.sendMessage(msg);
+                                    }
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                });
+                dialogview.findViewById(R.id.no).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         });
     }
