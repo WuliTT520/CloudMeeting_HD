@@ -122,7 +122,7 @@ public class FaceIDActivity extends Activity {
 //                                cameraHelper.start();
                                 finish();
                             }
-                        },2000);
+                        },1000*3);
 
                         break;
                     case 404:

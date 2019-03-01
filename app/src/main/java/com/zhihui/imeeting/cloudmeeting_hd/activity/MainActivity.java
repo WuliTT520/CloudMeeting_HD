@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
     ImageView set;
     ImageView more;
     ImageView qrcode;
-
+    boolean iswork;
 
     CustomPopWindow mCustomPopWindow;
     String sessionId;
@@ -147,6 +147,7 @@ public class MainActivity extends Activity {
                             button.setText("等待会议开始");
                             button.setBackgroundColor(MainActivity.this.getResources().getColor(R.color.free));
                             bg.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.free_bg));
+//                            iswork=false;
                         }else {
                             isworking.setText("会议进行中");
                             isworking.setTextColor(MainActivity.this.getResources().getColor(R.color.work));
@@ -155,6 +156,7 @@ public class MainActivity extends Activity {
                             button.setText("会议签到");
                             button.setBackgroundColor(MainActivity.this.getResources().getColor(R.color.work));
                             bg.setBackground(MainActivity.this.getResources().getDrawable(R.drawable.working_bg));
+                            iswork=true;
                         }
                         break;
                     case 201:
@@ -314,8 +316,15 @@ public class MainActivity extends Activity {
         more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this,"详细信息",Toast.LENGTH_LONG).show();
+//                Toast.makeText(MainActivity.this,"详细信息",Toast.LENGTH_LONG).show();
                 Intent intent=new Intent(MainActivity.this,InfoActivity.class);
+                intent.putExtra("time",current_time_year+"-"+current_time_month+"-"+current_time_day);
+                intent.putExtra("iswork",iswork);
+//                if (iswork){
+//                    Toast.makeText(MainActivity.this,"会议室工作",Toast.LENGTH_LONG).show();
+//                }else {
+//                    Toast.makeText(MainActivity.this,"会议室空闲",Toast.LENGTH_LONG).show();
+//                }
                 startActivity(intent);
             }
         });
@@ -332,6 +341,7 @@ public class MainActivity extends Activity {
                 params.width = 620;
                 params.height = 620;
                 dialog.getWindow().setAttributes(params);
+                dialog.getWindow().setBackgroundDrawableResource(R.color.touming);
 
 //                dialog.show();
             }
@@ -414,6 +424,7 @@ public class MainActivity extends Activity {
                     }
                 });
                 dialog.show();
+                dialog.getWindow().setBackgroundDrawableResource(R.color.touming);
             }
         });
     }
