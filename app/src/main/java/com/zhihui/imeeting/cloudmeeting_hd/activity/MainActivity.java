@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.zhouwei.library.CustomPopWindow;
 import com.zhihui.imeeting.cloudmeeting_hd.R;
 import com.zhihui.imeeting.cloudmeeting_hd.controller.MyURL;
+import com.zhihui.imeeting.cloudmeeting_hd.helper.TCP;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -346,6 +347,22 @@ public class MainActivity extends Activity {
 //                dialog.show();
             }
         });
+//        room_name_tv.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                new Thread(){
+//                    public void run(){
+//                        TCP tcp=new TCP();
+//                        try {
+//                            tcp.post();
+//                        }catch (Exception e){
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }.start();
+//
+//            }
+//        });
     }
 
     private void handleLogic(View contentView) {

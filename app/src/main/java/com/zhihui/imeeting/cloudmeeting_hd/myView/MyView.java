@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PaintFlagsDrawFilter;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -145,11 +146,13 @@ public class MyView extends View {
         drawText(canvas);
 //        drawRectangle(canvas);
         drawInfo(canvas);
+//        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG|Paint.FILTER_BITMAP_FLAG));
     }
 
     /*绘制一条直线*/
     public void drawLine(Canvas canvas){
         mPaint=new Paint();
+        mPaint.setAntiAlias(true);
         //设置画板颜色
         canvas.drawColor(Color.TRANSPARENT);
         //设置画笔颜色
@@ -163,6 +166,7 @@ public class MyView extends View {
 
     public void drawPoint(Canvas canvas){
         mPaint=new Paint();
+        mPaint.setAntiAlias(true);
         //设置画板颜色
         canvas.drawColor(Color.TRANSPARENT);
         //设置画笔颜色
@@ -179,6 +183,7 @@ public class MyView extends View {
     public void drawText(Canvas canvas){
         mPaint=new Paint();
         //设置画板颜色
+        mPaint.setAntiAlias(true);
         canvas.drawColor(Color.TRANSPARENT);
         //设置画笔颜色
         mPaint.setColor(Color.GRAY);
@@ -193,6 +198,7 @@ public class MyView extends View {
         rectangles=new Rectangle[meetingInfos.length];
         for(int i=0;i<meetingInfos.length;i++){
             mPaint=new Paint();
+            mPaint.setAntiAlias(true);
 //            if (meetingInfos[i].getState().equals("进行中")){
 //                mPaint.setColor(Color.argb(70,237,90,101));
 //            }else {

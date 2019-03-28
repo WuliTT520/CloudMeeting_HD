@@ -9,7 +9,7 @@ public class TCP {
     public void post() throws UnknownHostException, IOException {
         // TODO Auto-generated method stub
         //1.建立TCP连接
-        String ip="192.168.4.1";   //服务器端ip地址
+        String ip="192.168.43.19";   //服务器端ip地址
         int port=8888;        //端口号
         Socket sck=new Socket(ip,port);
         //2.传输内容

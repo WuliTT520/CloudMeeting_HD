@@ -84,7 +84,7 @@ public class FaceIDActivity extends Activity {
         setContentView(R.layout.activity_face_id);
 
         meetingId=getIntent().getIntExtra("meetingId",-1);
-        Toast.makeText(FaceIDActivity.this,"会议id为"+meetingId,Toast.LENGTH_LONG).show();
+//        Toast.makeText(FaceIDActivity.this,"会议id为"+meetingId,Toast.LENGTH_LONG).show();
 
         previewView=findViewById(R.id.face);
 
@@ -107,14 +107,47 @@ public class FaceIDActivity extends Activity {
 
                         tip.setText(msg.getData().getString("message"));
                         dialog.show();
-                        TCP tcp=new TCP();
-                        try {
-                            tcp.post();
-                            Toast.makeText(FaceIDActivity.this,"运行到这",Toast.LENGTH_LONG).show();
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    TCP tcp=new TCP();
+                                    tcp.post();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+//                        Runnable runnable = new Runnable(){
+//                            @Override
+//                            public void run() {
+//                                //
+//                                // TODO: http request.
+//                                //
+//                                try {
+//                                    TCP tcp=new TCP();
+//                                    tcp.post();
+////                                    Toast.makeText(FaceIDActivity.this,"运行到这",Toast.LENGTH_LONG).show();
+//                                    Log.w("hhh","dsajklas");
+//                                }catch (Exception e){
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        };
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialog.dismiss();
+//                                cameraHelper.start();
 
+                                finish();
+                            }
+                        },1000*3);
+
+                        break;
+                    case 201:
+                        tip.setText(msg.getData().getString("message"));
+                        dialog.show();
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -123,7 +156,6 @@ public class FaceIDActivity extends Activity {
                                 finish();
                             }
                         },1000*3);
-
                         break;
                     case 404:
                         Toast.makeText(FaceIDActivity.this,"网络错误",Toast.LENGTH_LONG).show();
@@ -341,12 +373,22 @@ public class FaceIDActivity extends Activity {
                     JSONObject data = new JSONObject(result);
                     boolean flag = data.getBoolean("status");
                     if (flag){
-                        msg=Message.obtain();
-                        msg.what=200;
-                        Bundle bundle = new Bundle();
-                        bundle.putString("message",data.getString("message"));
-                        msg.setData(bundle);
-                        handler.sendMessage(msg);
+                        if(data.getString("message").equals("对不起，您非本场参会人员")){
+                            msg=Message.obtain();
+                            msg.what=201;
+                            Bundle bundle = new Bundle();
+                            bundle.putString("message",data.getString("message"));
+                            msg.setData(bundle);
+                            handler.sendMessage(msg);
+                        }else {
+                            msg=Message.obtain();
+                            msg.what=200;
+                            Bundle bundle = new Bundle();
+                            bundle.putString("message",data.getString("message"));
+                            msg.setData(bundle);
+                            handler.sendMessage(msg);
+                        }
+
                     }else {
                         msg=Message.obtain();
                         msg.what=500;
