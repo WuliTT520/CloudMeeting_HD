@@ -70,6 +70,7 @@ public class FaceIDActivity extends Activity {
     private Handler handler;
     private Message msg;
     AlertDialog.Builder builder;
+    private Boolean flag=false;
     /**
      * 所需的所有权限信息
      */
@@ -224,11 +225,13 @@ public class FaceIDActivity extends Activity {
          * @param 引擎最多能检测出的人脸数 [1, 50]
          * @param 引擎功能:人脸检测、人脸识别、年龄检测、人脸三维角度检测、性别检测、活体检测
          */
+
         int errorCode = faceEngine.init(this.getApplicationContext(), FaceEngine.ASF_DETECT_MODE_VIDEO,
                 FaceEngine.ASF_OP_0_HIGHER_EXT,
                 16, 1,
                 processMask);
         //获取版本信息
+        Log.w("errorCode",errorCode+"    "+this.getApplicationContext());
         VersionInfo versionInfo = new VersionInfo();
         faceEngine.getVersion(versionInfo);
         if (errorCode != ErrorInfo.MOK) {
@@ -271,18 +274,22 @@ public class FaceIDActivity extends Activity {
                 int code = faceEngine.detectFaces(nv21, previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21, faceInfoList);
                 Log.i("code", "code:"+code);
                 if (code == ErrorInfo.MOK && faceInfoList.size() > 0) {
-                    FaceFeature faceFeatures = new FaceFeature();
-                    //从图片解析出人脸特征数据
-                    int extractFaceFeatureCodes = faceEngine.extractFaceFeature(nv21, previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21, faceInfoList.get(0), faceFeatures);
-                    if(extractFaceFeatureCodes == ErrorInfo.MOK) {
-                        faceFeatureData = faceFeatures.getFeatureData();
+
+                    if (!flag){
+                        FaceFeature faceFeatures = new FaceFeature();
+                        //从图片解析出人脸特征数据
+                        int extractFaceFeatureCodes = faceEngine.extractFaceFeature(nv21, previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21, faceInfoList.get(0), faceFeatures);
+                        if(extractFaceFeatureCodes == ErrorInfo.MOK) {
+                            faceFeatureData = faceFeatures.getFeatureData();
 //                        System.out.print("特征值:");
 //                        System.out.println(bytesToHex(faceFeatureData));
-                        cameraHelper.stop();
-                        qiandao(bytesToHex(faceFeatureData));
-
-                        return;
+                            cameraHelper.stop();
+                            flag=true;
+                            qiandao(bytesToHex(faceFeatureData));
+                            return;
+                        }
                     }
+
                 }else {
                     return;
                 }
